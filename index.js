@@ -9,8 +9,8 @@ const PORT = 3000; // Replit will expose it automatically
 
 // --- Discord Bot Setup ---
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-const TOKEN = "YOUR_DISCORD_BOT_TOKEN";
-const CHANNEL_ID = "YOUR_DISCORD_CHANNEL_ID"; // Where Roblox messages will go
+const TOKEN = secrets.Token;
+const CHANNEL_ID = "1315007441519247491"; // Where Roblox messages will go
 
 client.login(TOKEN);
 
