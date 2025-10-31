@@ -14,7 +14,7 @@ app.use(express.json());
 // Disable browser CORS requests
 app.use(cors({ origin: false }));
 
-let latestCommand = null;
+let latestCommand = [];
 
 // === Middleware: Check Secret Token ===
 function checkApiSecret(req, res, next) {
@@ -26,10 +26,10 @@ function checkApiSecret(req, res, next) {
 }
 
 // === Express API ===
-
+  
 // Receives new commands from Discord bot
 app.post("/command", checkApiSecret, (req, res) => {
-  latestCommand = req.body;
+  latestCommand.push(req.body);
   console.log("New command:", latestCommand);
   res.sendStatus(200);
 });
@@ -37,7 +37,7 @@ app.post("/command", checkApiSecret, (req, res) => {
 // Roblox calls this every few seconds
 app.get("/latest", checkApiSecret, (req, res) => {
   res.json(latestCommand || {});
-  latestCommand = null;
+  latestCommand = [];
 });
 
 // === Discord Bot ===
@@ -55,6 +55,21 @@ const commands = [
         description: "The message to print",
         type: 3,
         required: true,
+      },
+    ],
+    name: "kick",
+    description: "Kick a user from the server",
+    options: [
+      {
+        name: "user",
+        description: "The user to kick",
+        type: 3,
+        required: true,
+
+        name: "reason",
+        description: "Reason for kicking the user",
+        type: 3,
+        required: false,
       },
     ],
   },
@@ -81,9 +96,17 @@ client.on("interactionCreate", async (interaction) => {
     const message = interaction.options.getString("message");
 
     // Send to bridge
-    latestCommand = { command: "print", message };
+    latestCommand.push({ command: "print", message });
 
     await interaction.reply(`✅ Sent message to Roblox: ${message}`);
+  } else if (interaction.commandName === "kick") {
+    const user = interaction.options.getString("user");
+    const reason = interaction.options.getString("reason") || "No reason provided";
+
+    // Send to bridge
+    latestCommand.push({ command: "kick", user, reason });
+
+    await interaction.reply(`✅ Sent kick command to Roblox: ${user} (${reason})`);
   }
 });
 
