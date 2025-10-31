@@ -1,6 +1,6 @@
 {
   "name": "roblox-discord-bridge",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
     "discord.js": "^14.15.2",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "cors": "^2.8.5"
   }
 }
