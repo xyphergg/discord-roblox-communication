@@ -34,19 +34,13 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 // Define slash command
 const commands = [
   {
-    name: "givecoins",
-    description: "Give coins to a Roblox player",
+    name: "print",
+    description: "Print a message to the console",
     options: [
       {
-        name: "player",
-        description: "Roblox username",
+        name: "message",
+        description: "The message to print",
         type: 3,
-        required: true,
-      },
-      {
-        name: "amount",
-        description: "Number of coins",
-        type: 4,
         required: true,
       },
     ],
@@ -70,14 +64,13 @@ const commands = [
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
-  if (interaction.commandName === "givecoins") {
-    const player = interaction.options.getString("player");
-    const amount = interaction.options.getInteger("amount");
+  if (interaction.commandName === "print") {
+    const message = interaction.options.getString("message");
 
     // Send to bridge
-    latestCommand = { command: "givecoins", player, amount };
+    latestCommand = { command: "print", message };
 
-    await interaction.reply(`✅ Gave ${amount} coins to ${player} in Roblox.`);
+    await interaction.reply(`✅ Sent message to Roblox: ${message}`);
   }
 });
 
