@@ -1,42 +1,90 @@
-const express = require("express");
-const { Client, GatewayIntentBits } = require("discord.js");
-const bodyParser = require("body-parser");
+// index.js
+import express from "express";
+import fetch from "node-fetch";
+import { Client, GatewayIntentBits, Routes } from "discord.js";
+import { config } from "dotenv";
+import { REST } from "@discordjs/rest";
 
+config();
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
-const PORT = 3000; // Replit will expose it automatically
+let latestCommand = null;
 
-// --- Discord Bot Setup ---
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-const TOKEN = secrets.Token;
-const CHANNEL_ID = "1315007441519247491"; // Where Roblox messages will go
+// === Express API ===
 
-client.login(TOKEN);
-
-client.on("ready", () => {
-    console.log(`Logged in as ${client.user.tag}`);
+// Receives new commands from Discord bot
+app.post("/command", (req, res) => {
+  latestCommand = req.body;
+  console.log("New command:", latestCommand);
+  res.sendStatus(200);
 });
 
-// Listen to messages from Discord and forward to Roblox
-client.on("messageCreate", async (message) => {
-    if (message.channel.id === CHANNEL_ID && !message.author.bot) {
-        // You could store messages or call Roblox endpoint here
-        console.log(`Discord → Roblox: ${message.author.username}: ${message.content}`);
-    }
+// Roblox calls this every few seconds
+app.get("/latest", (req, res) => {
+  res.json(latestCommand || {});
+  latestCommand = null;
 });
 
-// --- Roblox → Discord Endpoint ---
-app.post("/roblox", async (req, res) => {
-    const { username, message } = req.body;
-    const channel = client.channels.cache.get(CHANNEL_ID);
-    if (channel) {
-        channel.send(`**${username}**: ${message}`);
-    }
-    res.sendStatus(200);
+// === Discord Bot ===
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
+
+// Define slash command
+const commands = [
+  {
+    name: "givecoins",
+    description: "Give coins to a Roblox player",
+    options: [
+      {
+        name: "player",
+        description: "Roblox username",
+        type: 3,
+        required: true,
+      },
+      {
+        name: "amount",
+        description: "Number of coins",
+        type: 4,
+        required: true,
+      },
+    ],
+  },
+];
+
+// Register slash commands
+(async () => {
+  try {
+    console.log("Registering slash commands...");
+    await rest.put(
+      Routes.applicationCommands("1433130963105349773"),
+      { body: commands }
+    );
+    console.log("Commands registered.");
+  } catch (err) {
+    console.error(err);
+  }
+})();
+
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "givecoins") {
+    const player = interaction.options.getString("player");
+    const amount = interaction.options.getInteger("amount");
+
+    // Send to bridge
+    latestCommand = { command: "givecoins", player, amount };
+
+    await interaction.reply(`✅ Gave ${amount} coins to ${player} in Roblox.`);
+  }
 });
 
-// Start the web server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+client.once("ready", () => console.log(`✅ Logged in as ${client.user.tag}`));
+client.login(process.env.DISCORD_TOKEN);
+
+// === Start the bridge server ===
+app.listen(process.env.PORT || 3000, () =>
+  console.log("Bridge running on port", process.env.PORT)
+);
