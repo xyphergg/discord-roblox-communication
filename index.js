@@ -65,12 +65,13 @@ const commands = [
         description: "The user to kick",
         type: 3,
         required: true,
-
+      },
+      {
         name: "reason",
         description: "Reason for kicking the user",
         type: 3,
         required: false,
-      },
+      }
     ],
   },
 ];
