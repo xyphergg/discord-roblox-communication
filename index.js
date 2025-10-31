@@ -53,28 +53,31 @@ const commands = [
       {
         name: "message",
         description: "The message to print",
-        type: 3,
+        type: 3, // STRING
         required: true,
       },
     ],
+  },
+  {
     name: "kick",
     description: "Kick a user from the server",
     options: [
       {
         name: "user",
         description: "The user to kick",
-        type: 3,
+        type: 3, // USER
         required: true,
       },
       {
         name: "reason",
         description: "Reason for kicking the user",
-        type: 3,
+        type: 3, // STRING
         required: false,
-      }
+      },
     ],
   },
 ];
+
 
 // Register slash commands
 (async () => {
