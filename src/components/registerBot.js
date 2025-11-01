@@ -1,7 +1,6 @@
 // Create slash commands for the bot
-
 import { REST } from "@discordjs/rest";
-import { GatewayIntentBits, Client } from "discord.js";
+import { GatewayIntentBits, Client, Routes } from "discord.js";
 
 const commands = [
   {
