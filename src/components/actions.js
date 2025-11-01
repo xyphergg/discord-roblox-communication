@@ -11,35 +11,15 @@ const Actions = {
         return latestCommand.at(-1) || {};
     },
     HandleCommand: async (interaction, latest) => {
-        if (!interaction.isCommand()) return;
+       if (!interaction.isCommand()) return;
 
-        let command = `./classes/commands/${interaction.commandName}.js`;
-        if (command && interaction.commandName) {
-            try {
-                const commandModule = await import(command);
-                commandModule.default(interaction, latest); 
-            } catch (error) {
-                console.error("Command Service Error:", error);
-            }
+        const path = `./classes/commands/${interaction.commandName}.js`;
+        try {
+            const commandModule = await import(new URL(path, import.meta.url));
+            commandModule.default(interaction, latest); 
+        } catch (error) {
+            console.error("Command Service Error:", error);
         }
-
-    // if (interaction.commandName === "print") {
-    //     const message = interaction.options.getString("message");
-
-    //     // Send to bridge
-    //     latest.push({ command: "print", message });
-
-    //     await interaction.reply(`✅ Sent message to Roblox: ${message}`);
-        
-    // } else if (interaction.commandName === "kick") {
-    //     const user = interaction.options.getString("user");
-    //     const reason = interaction.options.getString("reason") || "No reason provided";
-
-    //     // Send to bridge
-    //     latest.push({ command: "kick", user, reason });
-
-    //     await interaction.reply(`✅ Sent kick command to Roblox: ${user} (${reason})`);
-    // }
     },
     GenerateIdentifier: () => {
         const randomId = function(length = 12) {

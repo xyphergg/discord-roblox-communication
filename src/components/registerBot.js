@@ -51,7 +51,7 @@ const registerBot = async () => {
     console.error(err);
   }
 
-  client.once("ready", () => console.log(`✅ Logged in as ${client.user.tag}`));
+  client.once("clientReady", () => console.log(`✅ Logged in as ${client.user.tag}`));
   client.login(process.env.DISCORD_TOKEN);
 
   return { client, rest };
