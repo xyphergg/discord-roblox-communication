@@ -13,7 +13,7 @@ const Actions = {
     HandleCommand: async (interaction, latest) => {
         if (!interaction.isCommand()) return;
 
-        let command = `./classes/commands/${interaction.commandName}`;
+        let command = `./classes/commands/${interaction.commandName}.js`;
         if (command && interaction.commandName) {
             try {
                 const commandModule = await import(command);
