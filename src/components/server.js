@@ -1,4 +1,4 @@
-import {express} from 'express';
+import express from 'express';
 import cors from "cors";
 
 const app = express();
@@ -51,4 +51,4 @@ app.delete("/exec", checkApiSecret, (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Bridge running on port ${PORT}`));
 
-export const latest = latestCommand;
+export default latestCommand;
