@@ -1,6 +1,10 @@
 // Create slash commands for the bot
+import process from "process";
 import { REST } from "@discordjs/rest";
 import { GatewayIntentBits, Client, Routes } from "discord.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const commands = [
   {
@@ -38,7 +42,7 @@ const commands = [
 const registerBot = async () => {
 
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-  const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN); 
+  const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
   try {
     console.log("Registering slash commands...");

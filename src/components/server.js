@@ -6,8 +6,8 @@ app.use(express.json());
 
 function checkApiSecret(req, res, next) {
   // console.log("Request:", req); NOPE!
-  const token = req.headers['x-api-key'];
-  if (token !== process.env.API_SECRET) {
+  const token = req.headers['x-api-key']; // Bot/Game must send this header
+  if (token !== process.env.API_KEY) {
     return res.status(403).json({ error: "Forbidden" });
   }
   next();

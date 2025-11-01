@@ -1,6 +1,5 @@
 
-import fs from "fs";
-import path from "path";
+
 
 const Keys = []
 
@@ -16,17 +15,13 @@ const Actions = {
     HandleCommand: async (interaction, latest) => {
        if (!interaction.isCommand()) return;
 
-        const commandPath = path.resolve(
-            new URL("./classes/commands", import.meta.url).pathname,
-            `${interaction.commandName}.js`
-        );
+        const commandPath = `../classes/commands/${interaction.commandName}.js`;
 
-        if (!fs.existsSync(commandPath)) {
-            console.warn(`Command not found: ${interaction.commandName}`);
-            return; 
-        }
+        console.log("Command Path:", commandPath);
+        console.log("Interaction Command Name:", interaction.commandName);
+
         try {
-            const commandModule = await import(new URL(commandPath, import.meta.url));
+            const commandModule = await import(commandPath);
             commandModule.default(interaction, latest);
         } catch (error) {
             console.error("Command Service Error:", error);
@@ -37,13 +32,13 @@ const Actions = {
             return Math.random().toString(36).substring(2, length+2);
         };
         let newId = randomId();
-        existing.find(function(id) {
+        Keys.find(function(id) {
             return id === newId;
         });
 
         return newId;
     },
-    CreateCommand: (type, data) => {
+    CreateCommand: (latest, type, data) => {
         let command = { command: type, ...data };
         let id = Actions.GenerateIdentifier();
         command.id = id;

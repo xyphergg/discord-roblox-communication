@@ -6,6 +6,6 @@ export default async function(interaction, latest) {
     const reason = interaction.options.getString("reason") || "No reason provided";
     const message = `Kick user: ${user}, Reason: ${reason}`;
 
-    Actions.CreateCommand("kick", { user, reason });
+    Actions.CreateCommand(latest, "kick", { user, reason });
     await interaction.reply(`Kick command executed! **${message}**`);
 }
