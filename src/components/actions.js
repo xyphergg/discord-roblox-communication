@@ -13,10 +13,18 @@ const Actions = {
     HandleCommand: async (interaction, latest) => {
        if (!interaction.isCommand()) return;
 
-        const path = `./classes/commands/${interaction.commandName}.js`;
+        const commandPath = path.resolve(
+            new URL("./classes/commands", import.meta.url).pathname,
+            `${interaction.commandName}.js`
+        );
+
+        if (!fs.existsSync(commandPath)) {
+            console.warn(`Command not found: ${interaction.commandName}`);
+            return; 
+        }
         try {
-            const commandModule = await import(new URL(path, import.meta.url));
-            commandModule.default(interaction, latest); 
+            const commandModule = await import(new URL(commandPath, import.meta.url));
+            commandModule.default(interaction, latest);
         } catch (error) {
             console.error("Command Service Error:", error);
         }
