@@ -14,7 +14,7 @@ class CustomClient extends discord_js_1.Client {
         super({ intents: [] });
         const { DISCORD_TOKEN, DISCORD_ID, API_KEY, PORT } = process_1.default.env;
         if (!DISCORD_TOKEN || !API_KEY || !PORT || !DISCORD_ID) {
-            throw new Error("Missing required environment variables: TOKEN, API_KEY, PORT");
+            throw new Error(`Missing required environment variables: ${DISCORD_TOKEN, DISCORD_ID, API_KEY, PORT}`);
         }
         this.config = {
             token: DISCORD_TOKEN,

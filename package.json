@@ -2,7 +2,6 @@
   "name": "roblox-discord-bridge",
   "version": "1.0.1",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "start": "node src/index.js"
   },
