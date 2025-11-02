@@ -1,7 +1,14 @@
-import latest from "./components/server.js";
-import Actions from "./components/actions.js";
-import registerBot from "./components/registerBot.js";
-
-const { client, rest } = await registerBot();
-
-client.on("interactionCreate", async (interaction) => Actions.HandleCommand(interaction, latest));
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = require("dotenv");
+const CustomClient_js_1 = __importDefault(require("./classes/CustomClient.js"));
+const Server_js_1 = __importDefault(require("./classes/Server.js"));
+(0, dotenv_1.config)();
+let Client = new CustomClient_js_1.default;
+let App = new Server_js_1.default;
+console.log("yo i started");
+App.Init();
+Client.Init();
