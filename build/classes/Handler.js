@@ -1,0 +1,80 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const glob_1 = require("glob");
+const path_1 = __importDefault(require("path"));
+class Handler {
+    client;
+    constructor(client) {
+        this.client = client;
+    }
+    async LoadEvents() {
+        try {
+            const files = (await (0, glob_1.glob)('build/classes/events/**/*.js')).map(filePath => path_1.default.resolve(filePath));
+            files.map(async (file) => {
+                const event = new (await Promise.resolve(`${file}`).then(s => __importStar(require(s)))).default(this.client);
+                if (!event.name)
+                    return delete require.cache[require.resolve(file)] && console.log(`${file.split("/").pop()} does not have a name`);
+                const execute = (...args) => event.Execute(...args);
+                if (event.once) {
+                    this.client.once(event.name, execute);
+                }
+                else {
+                    this.client.on(event.name, execute);
+                }
+                return delete require.cache[require.resolve(file)];
+            });
+        }
+        catch (err) {
+            console.warn("yeah noope");
+        }
+    }
+    async LoadCommands() {
+        const files = (await (0, glob_1.glob)('build/classes/commands/**/*.js')).map(filePath => path_1.default.resolve(filePath));
+        files.map(async (file) => {
+            const command = new (await Promise.resolve(`${file}`).then(s => __importStar(require(s)))).default(this.client);
+            if (!command.name)
+                return delete require.cache[require.resolve(file)] && console.log(`${file.split("/").pop()} does not have a name`);
+            if (file.split("/").pop()?.split(".")[2])
+                return this.client.subcommands.set(command.name, command);
+            this.client.commands.set(command.name, command);
+            return delete require.cache[require.resolve(file)];
+        });
+    }
+}
+exports.default = Handler;
